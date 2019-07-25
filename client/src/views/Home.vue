@@ -1,0 +1,159 @@
+<template>
+  <div class="bg-light">
+    <section class="container pb-5">
+      <div class="row py-5 justify-content-center">
+        <div class="col-sm-10 text-center">
+          <b-button variant="outline-primary" class="mx-3 my-3" @click="getTitles(50)">Generate 1 Title</b-button>
+          <b-button variant="outline-success" class="mx-3 my-3" @click="getTitles(250)">Generate Small Batch of Titles</b-button>
+          <b-button variant="outline-info" class="mx-3 my-3" @click="getTitles(1000)">Generate Large Batch of Titles</b-button>
+        </div>
+      </div>
+      <div v-show="visible" class="row justify-content-center">
+        <div class="col-10 text-center">
+          <b-table striped hover
+          id="anigen-table"
+          :items="titles"
+          :per-page="perPage"
+          :current-page="currentPage"
+          :busy="isBusy"
+          :fields="fields"
+          >
+            <template slot="actions" slot-scope="row">
+              <b-button :disabled="excellentClick(row.item.anigen_title)" variant="success" size="sm" @click="markExcellent(row.item)" class=mr-2>
+                Excellent
+              </b-button>
+              <b-button :disabled="weirdClick(row.item.anigen_title)" variant="danger" size="sm" @click="markWeird(row.item)">
+                Weird
+              </b-button>
+            </template>
+            <div slot="table-busy" class="text-center text-danger my-2">
+              <b-spinner class="align-middle"></b-spinner>
+              <strong>Loading Anigen Titles ...</strong>
+            </div>
+          </b-table>
+        </div>
+      </div>
+      <div v-show="visible" class="row justify-content-center">
+        <div class="col-4">
+          <b-pagination
+          v-model="currentPage"
+          :total-rows="rows"
+          :per-page="perPage"
+          align="center"
+          aria-controls="anigen-table"
+          ></b-pagination>
+        </div>
+      </div>
+    </section>
+  </div>
+</template>
+
+<script>
+  import axios from 'axios';
+
+  export default {
+
+    name: 'Home',
+
+    data() {
+
+      return {
+        isBusy: false,
+        visible: false,
+        perPage: 8,
+        currentPage: 1,
+        titles: [],
+        excellentTitles: [],
+        weirdTitles: [],
+        fields: [
+        { key: 'anigen_title', label: 'Anigen Titles', sortable: true },
+        { key: 'actions', label: 'Actions' },
+        ],
+      };
+
+    },
+
+    methods: {
+
+      toggleBusy() {
+        this.isBusy = !this.isBusy;
+      },
+
+      excellentClick(title) {
+        if (this.excellentTitles.includes(title)) {
+          return true;
+        }
+        return false;
+      },
+
+      weirdClick(title) {
+        console.log(title);
+        if (this.weirdTitles.includes(title)) {
+          return true;
+        }
+        return false;
+      },
+
+      async getTitles(batchSize) {
+        this.toggleBusy();
+        this.visible = true;
+
+        const path = `http://localhost:5000/predict/${batchSize}`;
+      
+        await axios.get(path)
+        .then((response) => {
+          this.titles = response.data.anigen_titles;
+          console.log(response.data);
+          this.toggleBusy();
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          this.toggleBusy();
+          console.error(error);
+        });
+      },
+
+      async markExcellent(anigen_title) {
+
+        const path = `http://localhost:5000/leaderboard/?title=${anigen_title.anigen_title}`;
+
+        await axios.get(path)
+        .then((response) => {
+          this.excellentTitles.push(anigen_title.anigen_title);
+          console.log(response.data);
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.error(error);
+        });
+      },
+
+      async markWeird(anigen_title) {
+
+        const path = `http://localhost:5000/weirderboard/?title=${anigen_title.anigen_title}`;
+
+        await axios.get(path)
+        .then((response) => {
+          this.weirdTitles.push(anigen_title.anigen_title);
+          console.log(response.data);
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.error(error);
+        });
+      },
+
+    },
+
+    computed: {
+    
+      rows() {
+        return this.titles.length;
+      },
+    
+    },
+  
+  };
+</script>
+<style>
+</style>
