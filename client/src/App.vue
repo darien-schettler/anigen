@@ -8,7 +8,7 @@
 
 <style lang="scss">
 	#app-body{
-		min-height: 90vh !important;
+		min-height: 92.5vh !important;
 	}
 	html {
     	height: 100%;

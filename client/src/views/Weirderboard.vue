@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="bg-light">
     <section class="container">
       <div class="row justify-content-center">
         <div class="col-10 text-center">
