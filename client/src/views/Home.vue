@@ -49,58 +49,56 @@
 </template>
 
 <script>
-  import axios from 'axios';
+import axios from 'axios';
 
-  export default {
+export default {
 
-    name: 'Home',
+  name: 'Home',
 
-    data() {
-
-      return {
-        isBusy: false,
-        visible: false,
-        perPage: 8,
-        currentPage: 1,
-        titles: [],
-        excellentTitles: [],
-        weirdTitles: [],
-        fields: [
+  data() {
+    return {
+      isBusy: false,
+      visible: false,
+      perPage: 8,
+      currentPage: 1,
+      titles: [],
+      excellentTitles: [],
+      weirdTitles: [],
+      fields: [
         { key: 'anigen_title', label: 'Anigen Titles', sortable: true },
         { key: 'actions', label: 'Actions' },
-        ],
-      };
+      ],
+    };
+  },
 
+  methods: {
+
+    toggleBusy() {
+      this.isBusy = !this.isBusy;
     },
 
-    methods: {
+    excellentClick(title) {
+      if (this.excellentTitles.includes(title)) {
+        return true;
+      }
+      return false;
+    },
 
-      toggleBusy() {
-        this.isBusy = !this.isBusy;
-      },
+    weirdClick(title) {
+      console.log(title);
+      if (this.weirdTitles.includes(title)) {
+        return true;
+      }
+      return false;
+    },
 
-      excellentClick(title) {
-        if (this.excellentTitles.includes(title)) {
-          return true;
-        }
-        return false;
-      },
+    async getTitles(batchSize) {
+      this.toggleBusy();
+      this.visible = true;
 
-      weirdClick(title) {
-        console.log(title);
-        if (this.weirdTitles.includes(title)) {
-          return true;
-        }
-        return false;
-      },
+      const path = `http://localhost:5000/predict/${batchSize}`;
 
-      async getTitles(batchSize) {
-        this.toggleBusy();
-        this.visible = true;
-
-        const path = `http://localhost:5000/predict/${batchSize}`;
-      
-        await axios.get(path)
+      await axios.get(path)
         .then((response) => {
           this.titles = response.data.anigen_titles;
           console.log(response.data);
@@ -111,13 +109,12 @@
           this.toggleBusy();
           console.error(error);
         });
-      },
+    },
 
-      async markExcellent(anigen_title) {
+    async markExcellent(anigen_title) {
+      const path = `http://localhost:5000/leaderboard/?title=${anigen_title.anigen_title}`;
 
-        const path = `http://localhost:5000/leaderboard/?title=${anigen_title.anigen_title}`;
-
-        await axios.get(path)
+      await axios.get(path)
         .then((response) => {
           this.excellentTitles.push(anigen_title.anigen_title);
           console.log(response.data);
@@ -126,13 +123,12 @@
           // eslint-disable-next-line
           console.error(error);
         });
-      },
+    },
 
-      async markWeird(anigen_title) {
+    async markWeird(anigen_title) {
+      const path = `http://localhost:5000/weirderboard/?title=${anigen_title.anigen_title}`;
 
-        const path = `http://localhost:5000/weirderboard/?title=${anigen_title.anigen_title}`;
-
-        await axios.get(path)
+      await axios.get(path)
         .then((response) => {
           this.weirdTitles.push(anigen_title.anigen_title);
           console.log(response.data);
@@ -141,19 +137,19 @@
           // eslint-disable-next-line
           console.error(error);
         });
-      },
-
     },
 
-    computed: {
-    
-      rows() {
-        return this.titles.length;
-      },
-    
+  },
+
+  computed: {
+
+    rows() {
+      return this.titles.length;
     },
-  
-  };
+
+  },
+
+};
 </script>
 <style>
 </style>

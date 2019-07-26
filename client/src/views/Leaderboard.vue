@@ -36,81 +36,77 @@
 </template>
 
 <script>
-	import axios from 'axios';
+import axios from 'axios';
 
-	export default {
-		
-		name: 'Home',
-		
-		data() {
+export default {
 
-			return {
-				perPage: 10,
-				currentPage: 1,
-				sortBy: "votes",
-				sortDesc: true,
-				items: [],
-				upvoted: [],
-				fields: [
-				{ key: 'anigen_titles', label: 'Anigen Titles', sortable: true },
-				{ key: 'votes', label: 'Number of Votes', sortable: true },
-				{ key: 'actions', label: 'Actions' },
-				],
-			};
+  name: 'Home',
 
-		},
+  data() {
+    return {
+      perPage: 10,
+      currentPage: 1,
+      sortBy: 'votes',
+      sortDesc: true,
+      items: [],
+      upvoted: [],
+      fields: [
+        { key: 'anigen_titles', label: 'Anigen Titles', sortable: true },
+        { key: 'votes', label: 'Number of Votes', sortable: true },
+        { key: 'actions', label: 'Actions' },
+      ],
+    };
+  },
 
-		async created() {
+  async created() {
+    await this.fetchLeaders();
+  },
 
-			await this.fetchLeaders();
+  methods: {
 
-		},
+    upvoting(title) {
+      if (this.upvoted.includes(title)) {
+        return true;
+      }
+      return false;
+    },
 
-		methods: {
+    fetchLeaders() {
+      const path_leaderboard = 'http://localhost:5000/leaderboard';
+      axios.get(path_leaderboard)
+        .then((response) => {
+          this.items = response.data;
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
 
-			upvoting(title) {
-				if (this.upvoted.includes(title)) {
-					return true;
-				}
-				return false;
-			},
-
-			fetchLeaders() {
-				const path_leaderboard = 'http://localhost:5000/leaderboard';
-				axios.get(path_leaderboard)
-				.then((response) => {
-					this.items = response.data;
-					console.log(response.data);
-				})
-				.catch((error) => {
-					console.log(error);
-				});
-			},
-
-			async upVoteExcellent(anigen_title) {
-				const path = `http://localhost:5000/leaderboard/?upvote=${anigen_title}`;
-				await axios.get(path)
-				.then((response) => {
-					console.log(response.data);
-					this.upvoted.push(anigen_title);
-					this.fetchLeaders();
-				})
-				.catch((error) => {
-					// eslint-disable-next-line
+    async upVoteExcellent(anigen_title) {
+      const path = `http://localhost:5000/leaderboard/?upvote=${anigen_title}`;
+      await axios.get(path)
+        .then((response) => {
+          console.log(response.data);
+          this.upvoted.push(anigen_title);
+          this.fetchLeaders();
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
 					console.error(error);
-				});
-			},
+        });
+    },
 
-		},
+  },
 
-		computed: {
+  computed: {
 
-			rows() {
-				return this.items.length;
-			},
+    rows() {
+      return this.items.length;
+    },
 
-		},
-	};
+  },
+};
 </script>
 <style>
 </style>

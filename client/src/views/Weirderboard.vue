@@ -36,49 +36,45 @@
 </template>
 
 <script>
-  import axios from 'axios';
-  
-  export default {
-    
-    name: 'Home',
-    
-    data() {
-    
-      return {
-        myToggle: false,
-        perPage: 10,
-        sortBy: "votes",
-        sortDesc: true,
-        currentPage: 1,
-        items: [],
-        upvoted: [],
-        fields: [
+import axios from 'axios';
+
+export default {
+
+  name: 'Home',
+
+  data() {
+    return {
+      myToggle: false,
+      perPage: 10,
+      sortBy: 'votes',
+      sortDesc: true,
+      currentPage: 1,
+      items: [],
+      upvoted: [],
+      fields: [
         { key: 'anigen_titles', label: 'Anigen Titles', sortable: true },
         { key: 'votes', label: 'Number of Votes', sortable: true },
         { key: 'actions', label: 'Actions' },
-        ],
-      };
-    
-    },
-    
-    async created() {
-    
-      await this.fetchWeird();
-    
+      ],
+    };
+  },
+
+  async created() {
+    await this.fetchWeird();
+  },
+
+  methods: {
+
+    upvoting(title) {
+      if (this.upvoted.includes(title)) {
+        return true;
+      }
+      return false;
     },
 
-    methods: {
-  
-      upvoting(title) {
-        if (this.upvoted.includes(title)) {
-          return true;
-        }
-        return false;
-      },
-  
-      fetchWeird() {
-        const path_weirderboard = 'http://localhost:5000/weirderboard';
-        axios.get(path_weirderboard)
+    fetchWeird() {
+      const path_weirderboard = 'http://localhost:5000/weirderboard';
+      axios.get(path_weirderboard)
         .then((response) => {
           this.items = response.data;
           console.log(response.data);
@@ -86,11 +82,11 @@
         .catch((error) => {
           console.log(error);
         });
-      },
-  
-      async upVoteWeird(anigen_title) {
-        const path = `http://localhost:5000/weirderboard/?upvote=${anigen_title}`;
-        await axios.get(path)
+    },
+
+    async upVoteWeird(anigen_title) {
+      const path = `http://localhost:5000/weirderboard/?upvote=${anigen_title}`;
+      await axios.get(path)
         .then((response) => {
           console.log(response.data);
           this.fetchWeird();
@@ -99,19 +95,19 @@
           // eslint-disable-next-line
           console.error(error);
         });
-      },
-  
     },
-    
-    computed: {
-    
-      rows() {
-        return this.items.length;
-      },
-    
+
+  },
+
+  computed: {
+
+    rows() {
+      return this.items.length;
     },
-  
-  };
+
+  },
+
+};
 </script>
 <style>
 </style>
