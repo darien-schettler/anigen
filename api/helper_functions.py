@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from txt_imports import TITLE_VOCAB, RANDOM_WORD_LIST
 from feature_imports import TITLE_VOCAB_SIZE, EMBEDDING_DIM, RNN_UNITS
 
@@ -6,7 +8,7 @@ import random
 import numpy as np
 
 import tensorflow as tf
-tf.enable_eager_execution()
+tf.compat.v1.enable_eager_execution()
 
 # ------------------------------- FNS BELOW WILL BE USED WITHIN IMPORTED FNs ------------------------------------
 
@@ -76,11 +78,13 @@ def generate_text(engine, start_string="", temp=0.75, num_generate=400, random_w
     # Empty string to store our results
     text_generated = []
 
+    # Empty list to store our titles once split
+    output_titles = []
+
     # Low temperatures results in more predictable text.
     # Higher temperatures results in more surprising text.
     # Experiment to find the best setting.
     temperature = temp
-    output_titles = []
 
     # Here batch size == 1
     model.reset_states()
@@ -91,7 +95,7 @@ def generate_text(engine, start_string="", temp=0.75, num_generate=400, random_w
 
         # using a multinomial distribution to predict the word returned by the model
         predictions = predictions / temperature
-        predicted_id = tf.multinomial(predictions, num_samples=1)[-1, 0].numpy()
+        predicted_id = tf.random.categorical(predictions, num_samples=1)[-1, 0].numpy()
 
         # We pass the predicted word as the next input to the model
         # along with the previous hidden state
@@ -103,4 +107,38 @@ def generate_text(engine, start_string="", temp=0.75, num_generate=400, random_w
     return output_titles
 
 
+def get_args_from_post(data_in):
+    if data_in.get('batchSize') is not None:
+        num_of_chars = int(data_in.get('batchSize'))
+    else:
+        num_of_chars = 50
+
+    if data_in.get('startString') is not None:
+        start_string = data_in.get('startString')
+    else:
+        start_string = ""
+
+    if data_in.get('randomness') is not None:
+        temp = float(data_in.get('randomness'))
+    else:
+        temp = 0.75
+
+    return num_of_chars, start_string, temp
+
+
+def parse_anigen_and_dropped_titles(titles, real_titles, num_of_chars):
+    anigen_titles = titles[1:]
+
+    dropped_titles = [x for x in titles if x in real_titles]
+    dropped_list_dict = [{"dropped_title": dropped_title} for dropped_title in dropped_titles]
+
+    anigen_titles = [x for x in anigen_titles if x not in real_titles]
+
+    if int(num_of_chars) == 50:
+        anigen_list_dict = [{"anigen_title": anigen_titles[0]}]
+    else:
+        anigen_list_dict = [{"anigen_title": title} for title in anigen_titles if len(title) >= 4]
+
+
+    return anigen_list_dict, dropped_list_dict
 # ----------------------------------------------------------------------------------------------------------------

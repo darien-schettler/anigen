@@ -73,7 +73,7 @@ export default {
     },
 
     fetchWeird() {
-      const path_weirderboard = 'http://localhost:5000/weirderboard';
+      const path_weirderboard = 'http://localhost:80/api/weirderboard';
       axios.get(path_weirderboard)
         .then((response) => {
           this.items = response.data;
@@ -85,7 +85,7 @@ export default {
     },
 
     async upVoteWeird(anigen_title) {
-      const path = `http://localhost:5000/weirderboard/?upvote=${anigen_title}`;
+      const path = `http://localhost:80/api/weirderboard/?upvote=${anigen_title}`;
       await axios.get(path)
         .then((response) => {
           console.log(response.data);

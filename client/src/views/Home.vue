@@ -1,11 +1,38 @@
 <template>
   <div class="bg-light">
     <section class="container pb-5">
-      <div class="row py-5 justify-content-center">
-        <div class="col-sm-10 text-center">
-          <b-button variant="outline-primary" class="mx-3 my-3" @click="getTitles(50)">Generate 1 Title</b-button>
-          <b-button variant="outline-success" class="mx-3 my-3" @click="getTitles(250)">Generate Small Batch of Titles</b-button>
-          <b-button variant="outline-info" class="mx-3 my-3" @click="getTitles(1000)">Generate Large Batch of Titles</b-button>
+      <div class="row pt-5 my-2 mx-5 justify-content-center">
+        <div class="col-sm-4 text-center">
+          <b-button variant="outline-primary" class="mx-3 my-1 shadow-sm" @click="getTitles(50)">Generate 1 Title</b-button>
+        </div>
+        <div class="col-sm-4 text-center">
+          <b-button variant="outline-success" class="mx-3 my-1 shadow-sm" @click="getTitles(250)">Generate Small Batch of Titles</b-button>
+        </div>
+        <div class="col-sm-4 text-center">
+          <b-button variant="outline-info" class="mx-3 my-1 shadow-sm" @click="getTitles(1000)">Generate Large Batch of Titles</b-button>
+        </div>
+      </div>
+      <div class="row pb-5 pt-2 justify-content-center">
+        <div class="col-6 text-center">
+          <b-button v-b-toggle.collapse-advanced-options size="sm" variant="secondary" class="px-3 py-2 font-weight-bold shadow-sm">Advanced Options</b-button>
+          <b-collapse id="collapse-advanced-options" class="mt-2">
+            <b-card>
+              <div class="row justify-content-center">
+                <div class="col-12 text-center">
+                  <label for="range-randomness" class="font-weight-bold">Randomness  :  {{ randomness }}</label>
+                  <b-form-input id="range-randomness" v-model="randomness" type="range" min="0.1" max="2" step="0.025"></b-form-input>
+                </div>
+              </div>
+              <div class="row justify-content-center my-3">
+                <div class="col-3 text-center my-auto">
+                  <label for="input-start-string" class="font-weight-bold">Seed String  :  </label>
+                </div>
+                <div class="col-8 text-center ml-1">
+                  <b-form-input id="input-start-string" v-model="startString" placeholder="Warriors"></b-form-input>
+                </div>
+              </div>
+            </b-card>
+          </b-collapse>
         </div>
       </div>
       <div v-show="visible" class="row justify-content-center">
@@ -26,9 +53,11 @@
                 Weird
               </b-button>
             </template>
-            <div slot="table-busy" class="text-center text-danger my-2">
-              <b-spinner class="align-middle"></b-spinner>
-              <strong>Loading Anigen Titles ...</strong>
+            <div slot="table-busy" class="text-center my-2">
+              <div>
+                  <b-spinner variant="dark" class="align-middle"></b-spinner>
+                  <strong class="text-dark px-1">Loading Anigen Titles ...</strong>
+              </div>
             </div>
           </b-table>
         </div>
@@ -61,7 +90,10 @@ export default {
       visible: false,
       perPage: 8,
       currentPage: 1,
+      randomness: '0.75',
+      startString: '',
       titles: [],
+      dropped_titles: [],
       excellentTitles: [],
       weirdTitles: [],
       fields: [
@@ -96,11 +128,16 @@ export default {
       this.toggleBusy();
       this.visible = true;
 
-      const path = `http://localhost:5000/predict/${batchSize}`;
-
-      await axios.get(path)
+      // const path = 'http://localhost:80/api/predict/';
+      const path = `http://ec2-3-86-50-53.compute-1.amazonaws.com:80/api/predict/`;
+      await axios.post(path, {
+        batchSize,
+        randomness: this.randomness,
+        startString: this.startString,
+      })
         .then((response) => {
-          this.titles = response.data.anigen_titles;
+          this.titles = response.data[0];
+          this.dropped_titles = response.data[1];
           console.log(response.data);
           this.toggleBusy();
         })
@@ -112,7 +149,7 @@ export default {
     },
 
     async markExcellent(anigen_title) {
-      const path = `http://localhost:5000/leaderboard/?title=${anigen_title.anigen_title}`;
+      const path = `http://localhost:80/api/leaderboard/?title=${anigen_title.anigen_title}`;
 
       await axios.get(path)
         .then((response) => {
@@ -126,7 +163,7 @@ export default {
     },
 
     async markWeird(anigen_title) {
-      const path = `http://localhost:5000/weirderboard/?title=${anigen_title.anigen_title}`;
+      const path = `http://localhost:80/api/weirderboard/?title=${anigen_title.anigen_title}`;
 
       await axios.get(path)
         .then((response) => {

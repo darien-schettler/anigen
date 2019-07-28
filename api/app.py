@@ -1,7 +1,7 @@
-from flask import Flask, request, redirect, url_for, flash, jsonify
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from txt_imports import RANDOM_WORD_LIST, REAL_TITLES
-from helper_functions import prediction_engine, generate_text
+from helper_functions import prediction_engine, generate_text, get_args_from_post, parse_anigen_and_dropped_titles
 
 # -----------------------------------------------------------------------------------
 #                                   IMPORTS ABOVE
@@ -35,30 +35,27 @@ title_engine = prediction_engine()
 #                                           ENDPOINT DEFINITIONS ARE BELOW
 # ---------------------------------------------------------------------------------------------------------------
 # request model prediction endpoint
-@app.route('/api/predict/<batch_size>', methods=['GET'])
-def predict(batch_size):
+@app.route('/api/predict/', methods=['POST'])
+def predict():
+    """Handle request and output model generated titles in json format"""
+
+    # Handle empty requests.
+    if not request.json:
+        return jsonify({'error': 'no request received'})
+
+    num_of_chars, start_string, temp = get_args_from_post(request.get_json())
+
     anigen_titles = generate_text(engine=title_engine,
-                                  start_string="",
-                                  temp=0.75,
-                                  num_generate=int(batch_size),
+                                  start_string=start_string,
+                                  temp=temp,
+                                  num_generate=num_of_chars,
                                   random_word_list=RANDOM_WORD_LIST)
 
-    anigen_titles = anigen_titles[1:]
+    anigen_list_dict, dropped_list_dict = parse_anigen_and_dropped_titles(titles=anigen_titles,
+                                                                          real_titles=REAL_TITLES,
+                                                                          num_of_chars=num_of_chars)
 
-    original_length = len(anigen_titles)
-    anigen_titles = [x for x in anigen_titles if x not in REAL_TITLES]
-    dropped_titles = original_length - len(anigen_titles)
-
-    if int(batch_size) == 50:
-        anigen_list_dict = [{"anigen_title": anigen_titles[0]}]
-    else:
-        anigen_list_dict = [{"anigen_title": title.title()} for title in anigen_titles if len(title) >= 4]
-
-    data = {'number_of_dropped_titles': dropped_titles,
-            'anigen_title_count': original_length - dropped_titles,
-            'anigen_titles': anigen_list_dict}
-
-    return data
+    return jsonify(anigen_list_dict, dropped_list_dict)
 
 
 # leaderboard endpoint
@@ -102,3 +99,10 @@ def weirderboard():
     weirderboard = [{"votes": v, "anigen_titles": t} for v, t in zip(VOTES, WEIRDER_BOARD)]
     return jsonify(weirderboard)
 # ---------------------------------------------------------------------------------------------------------------
+
+
+# api/app.py
+if __name__ == '__main__':
+
+    app.run(host='0.0.0.0', port=80)
+

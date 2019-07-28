@@ -72,7 +72,9 @@ export default {
     },
 
     fetchLeaders() {
-      const path_leaderboard = 'http://localhost:5000/leaderboard';
+      const path_leaderboard = 'http://localhost:80/api/leaderboard';
+      // const path_leaderboard = 'ec2-3-86-50-53.compute-1.amazonaws.com:80/api/predic/leaderboard/';
+
       axios.get(path_leaderboard)
         .then((response) => {
           this.items = response.data;
@@ -84,7 +86,8 @@ export default {
     },
 
     async upVoteExcellent(anigen_title) {
-      const path = `http://localhost:5000/leaderboard/?upvote=${anigen_title}`;
+      const path = `http://localhost:80/api/leaderboard/?upvote=${anigen_title}`;
+
       await axios.get(path)
         .then((response) => {
           console.log(response.data);
