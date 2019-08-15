@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 from txt_imports import TITLE_VOCAB, RANDOM_WORD_LIST
 from feature_imports import TITLE_VOCAB_SIZE, EMBEDDING_DIM, RNN_UNITS
 
@@ -24,19 +23,19 @@ def mapping_creation(vocab):
 
 
 def build_model(vocab_size, embedding_dim, rnn_units, batch_size):
-    model = tf.keras.Sequential([
 
-        tf.keras.layers.Embedding(vocab_size, embedding_dim, batch_input_shape=[batch_size, None]),
-        tf.keras.layers.Dropout(0.25),
+    if tf.test.is_gpu_available():
+        rnn = tf.compat.v1.keras.layers.CuDNNGRU
+    else:
+        import functools
+        rnn = functools.partial(tf.keras.layers.GRU, recurrent_activation='sigmoid')
 
-        tf.keras.layers.LSTM(rnn_units, return_sequences=True, stateful=True, recurrent_initializer='glorot_uniform'),
-        tf.keras.layers.Dropout(0.2),
-
-        tf.keras.layers.LSTM(rnn_units, return_sequences=True, stateful=True, recurrent_initializer='glorot_uniform'),
-        tf.keras.layers.Dropout(0.05),
-
-        tf.keras.layers.Dense(vocab_size)
-    ])
+    model = tf.keras.Sequential()
+    model.add(tf.keras.layers.Embedding(vocab_size, embedding_dim, batch_input_shape=[batch_size, None]))
+    model.add(rnn(rnn_units, return_sequences=True, recurrent_initializer='glorot_uniform', stateful=True))
+    model.add(tf.keras.layers.Dropout(0.075))
+    model.add(rnn(rnn_units, return_sequences=True, recurrent_initializer='glorot_uniform', stateful=True))
+    model.add(tf.keras.layers.Dense(vocab_size))
 
     return model
 

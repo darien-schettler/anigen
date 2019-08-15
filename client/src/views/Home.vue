@@ -117,10 +117,10 @@ export default {
       // const path = 'http://localhost:80/api/predict/';
       const path = 'http://ec2-3-86-50-53.compute-1.amazonaws.com:80/api/predict/';
       await axios.post(path, {
-          batchSize,
-          randomness: this.randomness,
-          startString: this.startString,
-        })
+        batchSize,
+        randomness: this.randomness,
+        startString: this.startString,
+      })
         .then((response) => {
           this.titles = response.data[0];
           this.dropped_titles = response.data[1];

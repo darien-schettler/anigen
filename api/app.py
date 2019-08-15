@@ -15,14 +15,6 @@ from helper_functions import prediction_engine, generate_text, get_args_from_pos
 app = Flask(__name__)
 CORS(app)
 
-# ------------------------------------------------------
-#               TEMPORARY DUMMY DATA
-# ------------------------------------------------------
-LEADER_BOARD = []
-WEIRDER_BOARD = []
-VOTES = [1, 2, 3, 4, 5, 65, 4, 3, 2, 1, 1, 65, 4, 3, 2, 1, 1]
-# ------------------------------------------------------
-
 
 # -------------------------------------------
 # Make the title prediction model {engine}
