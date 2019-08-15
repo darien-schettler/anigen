@@ -1,9 +1,9 @@
 <template>
-  <div class="bg-light">
+  <div class="hero-section">
     <section class="container">
-      <div class="row justify-content-center">
+      <div class="row justify-content-center my-4">
         <div class="col-10 text-center">
-          <b-table striped hover
+          <b-table striped hover dark
           id="anigen-weirderboard"
           :sort-desc.sync="sortDesc"
           :sort-by.sync="sortBy"
@@ -17,6 +17,12 @@
                 Upvote
               </b-button>
             </template>
+            <div slot="table-busy" class="text-center my-2">
+              <div>
+                  <b-spinner variant="light" class="align-middle"></b-spinner>
+                  <strong class="text-light px-1">Loading Anigen Titles ...</strong>
+              </div>
+            </div>
           </b-table>
         </div>
       </div>
@@ -44,6 +50,7 @@ export default {
 
   data() {
     return {
+      isBusy: false,
       myToggle: false,
       perPage: 10,
       sortBy: 'votes',
@@ -52,7 +59,7 @@ export default {
       items: [],
       upvoted: [],
       fields: [
-        { key: 'anigen_titles', label: 'Anigen Titles', sortable: true },
+        { key: 'anigen_titles', label: 'Strange Anigen Titles', sortable: true },
         { key: 'votes', label: 'Number of Votes', sortable: true },
         { key: 'actions', label: 'Actions' },
       ],
@@ -64,7 +71,9 @@ export default {
   },
 
   methods: {
-
+    toggleBusy() {
+      this.isBusy = !this.isBusy;
+    },
     upvoting(title) {
       if (this.upvoted.includes(title)) {
         return true;
@@ -73,13 +82,17 @@ export default {
     },
 
     fetchWeird() {
+      this.toggleBusy();
+
       const path_weirderboard = 'http://localhost:80/api/weirderboard';
       axios.get(path_weirderboard)
         .then((response) => {
           this.items = response.data;
+          this.toggleBusy();
           console.log(response.data);
         })
         .catch((error) => {
+          this.toggleBusy();
           console.log(error);
         });
     },

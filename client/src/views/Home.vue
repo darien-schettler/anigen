@@ -1,15 +1,15 @@
 <template>
-  <div class="bg-light">
+  <div class="hero-section">
     <section class="container pb-5">
       <div class="row pt-5 my-2 mx-5 justify-content-center">
         <div class="col-sm-4 text-center">
-          <b-button variant="outline-primary" class="mx-3 my-1 shadow-sm" @click="getTitles(50)">Generate 1 Title</b-button>
+          <b-button variant="outline-light" class="mx-3 my-1 shadow-sm font-weight-bold" @click="getTitles(50)">Generate 1 Title</b-button>
         </div>
         <div class="col-sm-4 text-center">
-          <b-button variant="outline-success" class="mx-3 my-1 shadow-sm" @click="getTitles(250)">Generate Small Batch of Titles</b-button>
+          <b-button variant="outline-light" class="mx-3 my-1 shadow-sm font-weight-bold" @click="getTitles(250)">Generate Small Batch of Titles</b-button>
         </div>
         <div class="col-sm-4 text-center">
-          <b-button variant="outline-info" class="mx-3 my-1 shadow-sm" @click="getTitles(1000)">Generate Large Batch of Titles</b-button>
+          <b-button variant="outline-light" class="mx-3 my-1 shadow-sm font-weight-bold" @click="getTitles(1000)">Generate Large Batch of Titles</b-button>
         </div>
       </div>
       <div class="row pb-5 pt-2 justify-content-center">
@@ -28,7 +28,7 @@
                   <label for="input-start-string" class="font-weight-bold">Seed String  :  </label>
                 </div>
                 <div class="col-8 text-center ml-1">
-                  <b-form-input id="input-start-string" v-model="startString" placeholder="Warriors"></b-form-input>
+                  <b-form-input id="input-start-string" v-model="startString" placeholder="..."></b-form-input>
                 </div>
               </div>
             </b-card>
@@ -37,7 +37,7 @@
       </div>
       <div v-show="visible" class="row justify-content-center">
         <div class="col-10 text-center">
-          <b-table striped hover
+          <b-table striped hover dark
           id="anigen-table"
           :items="titles"
           :per-page="perPage"
@@ -55,8 +55,8 @@
             </template>
             <div slot="table-busy" class="text-center my-2">
               <div>
-                  <b-spinner variant="dark" class="align-middle"></b-spinner>
-                  <strong class="text-dark px-1">Loading Anigen Titles ...</strong>
+                  <b-spinner variant="light" class="align-middle"></b-spinner>
+                  <strong class="text-light px-1">Loading Anigen Titles ...</strong>
               </div>
             </div>
           </b-table>
@@ -189,4 +189,13 @@ export default {
 };
 </script>
 <style>
+.hero-section {
+  height: 100vh;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)),
+    url("../assets/images/cowboybebop.jpg");
+  /* flex-box thing */
+  display: flex;
+  flex-direction: column;
+  background-size: cover;
+}
 </style>

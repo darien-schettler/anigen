@@ -71,14 +71,14 @@
 						<template slot="modal-footer" slot-scope="{ ok, cancel}">
 					      <!-- Emulate built in modal footer ok and cancel button actions -->
 
-					      <b-button  variant="outline-warning" class="font-weight-bold mr-auto mr-3 px-3" @click="onReset($event)">
+					      <b-button  variant="outline-warning" class="font-weight-bold mr-auto px-3" @click="onReset($event)">
 					        Reset Fields
 					      </b-button>
 
   					      <b-button  variant="outline-danger" type="reset" class="font-weight-bold mr-2 px-3" @click="cancel(); onReset($event)">
 					        Cancel
 					      </b-button>
-					      <b-button  variant="outline-success" type="submit" class="font-weight-bold ml-3 px-4" @click="ok(); onSubmit($event);">
+					      <b-button  variant="outline-success" type="submit" class="font-weight-bold ml-lg-2 ml-auto px-4" @click="ok(); onSubmit($event);">
 					        Send It
 					      </b-button>
 					     </template>
@@ -147,9 +147,9 @@ export default {
 
 <style lang="scss">
 .bulma-teal{
-	color: lighten(#00D1B2, 0.7);
+	color: darken(gray, 1%);
 	&:hover {
-        color:teal;
+        color:darken(gray, 30%);
     }
    }
    .thumbnail {
