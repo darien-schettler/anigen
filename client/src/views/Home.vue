@@ -19,13 +19,13 @@
             <b-card>
               <div class="row justify-content-center">
                 <div class="col-12 text-center">
-                  <label for="range-randomness" class="font-weight-bold">Randomness  :  {{ randomness }}</label>
+                  <label for="range-randomness" class="font-weight-bold">Randomness : {{ randomness }}</label>
                   <b-form-input id="range-randomness" v-model="randomness" type="range" min="0.1" max="2" step="0.025"></b-form-input>
                 </div>
               </div>
               <div class="row justify-content-center my-3">
                 <div class="col-3 text-center my-auto">
-                  <label for="input-start-string" class="font-weight-bold">Seed String  :  </label>
+                  <label for="input-start-string" class="font-weight-bold">Seed String : </label>
                 </div>
                 <div class="col-8 text-center ml-1">
                   <b-form-input id="input-start-string" v-model="startString" placeholder="..."></b-form-input>
@@ -37,14 +37,7 @@
       </div>
       <div v-show="visible" class="row justify-content-center">
         <div class="col-10 text-center">
-          <b-table striped hover dark
-          id="anigen-table"
-          :items="titles"
-          :per-page="perPage"
-          :current-page="currentPage"
-          :busy="isBusy"
-          :fields="fields"
-          >
+          <b-table striped hover dark id="anigen-table" :items="titles" :per-page="perPage" :current-page="currentPage" :busy="isBusy" :fields="fields">
             <template slot="actions" slot-scope="row">
               <b-button :disabled="excellentClick(row.item.anigen_title)" variant="success" size="sm" @click="markExcellent(row.item)" class=mr-2>
                 Excellent
@@ -55,8 +48,8 @@
             </template>
             <div slot="table-busy" class="text-center my-2">
               <div>
-                  <b-spinner variant="light" class="align-middle"></b-spinner>
-                  <strong class="text-light px-1">Loading Anigen Titles ...</strong>
+                <b-spinner variant="light" class="align-middle"></b-spinner>
+                <strong class="text-light px-1">Loading Anigen Titles ...</strong>
               </div>
             </div>
           </b-table>
@@ -64,19 +57,12 @@
       </div>
       <div v-show="visible" class="row justify-content-center">
         <div class="col-4">
-          <b-pagination
-          v-model="currentPage"
-          :total-rows="rows"
-          :per-page="perPage"
-          align="center"
-          aria-controls="anigen-table"
-          ></b-pagination>
+          <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage" align="center" aria-controls="anigen-table"></b-pagination>
         </div>
       </div>
     </section>
   </div>
 </template>
-
 <script>
 import axios from 'axios';
 
@@ -129,12 +115,12 @@ export default {
       this.visible = true;
 
       // const path = 'http://localhost:80/api/predict/';
-      const path = `http://ec2-3-86-50-53.compute-1.amazonaws.com:80/api/predict/`;
+      const path = 'http://ec2-3-86-50-53.compute-1.amazonaws.com:80/api/predict/';
       await axios.post(path, {
-        batchSize,
-        randomness: this.randomness,
-        startString: this.startString,
-      })
+          batchSize,
+          randomness: this.randomness,
+          startString: this.startString,
+        })
         .then((response) => {
           this.titles = response.data[0];
           this.dropped_titles = response.data[1];
@@ -187,6 +173,7 @@ export default {
   },
 
 };
+
 </script>
 <style>
 .hero-section {
@@ -198,4 +185,5 @@ export default {
   flex-direction: column;
   background-size: cover;
 }
+
 </style>
