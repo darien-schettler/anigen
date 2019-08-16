@@ -1,5 +1,5 @@
 <template>
-<footer class="footer bg-white text-white">
+<footer class="footer bg-white mt-auto">
   <section class="container-fluid py-4 px-5">
     <div class="row justify-content-between">
       <div class="col-lg-7 my-auto py-3">
@@ -64,7 +64,7 @@
             <a href="https://www.reddit.com/user/darien-schettler" title="Reddit" class="font-weight-bold"><img height="50px" class="px-1 thumbnail " src="@/assets/icons/Reddit.svg" /></a>
           </div>
           <div class="col-lg-7 py-4 my-auto text-center">
-            <a href="darienschettler.com" class="bulma-teal font-weight-bold shadow-sm py-4 px-3 rounded-lg" style="font-size: 20px; text-decoration: none !important;" title="Portfolio">My Portfolio:
+            <a href="http://www.darienschettler.ca" class="bulma-teal font-weight-bold shadow-sm py-4 px-3 rounded-lg" style="font-size: 20px; text-decoration: none !important;" title="Portfolio">My Portfolio:
               <img height="50px" class="thumbnail px-3 mb-2" src="@/assets/icons/portfolio.jpg" />
             </a>
           </div>
@@ -140,5 +140,7 @@ export default {
   -webkit-transform: scale(1.175);
   transform: scale(1.175);
 }
-
+.footer{
+    margin-top: -50px;
+}
 </style>

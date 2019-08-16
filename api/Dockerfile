@@ -1,8 +1,9 @@
 FROM python:3.6-slim
 COPY ./app.py /deploy/
+COPY ./config.py /deploy/
+COPY ./.env /deploy/
 COPY ./feature_imports.py /deploy/
 COPY ./models.py /deploy/
-COPY ./config.py /deploy/
 COPY ./helper_functions.py /deploy/
 COPY ./txt_imports.py /deploy/
 COPY ./wsgi.py /deploy/

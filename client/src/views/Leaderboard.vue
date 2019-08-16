@@ -1,7 +1,7 @@
 <template>
   <div class="hero-section">
     <section class="container">
-      <div class="row justify-content-center my-4">
+      <div class="row justify-content-center mt-5 mb-1">
         <div class="col-10 text-center">
           <b-table striped hover dark id="anigen-leaderboard" :sort-desc.sync="sortDesc" :sort-by.sync="sortBy" :items="items" :per-page="perPage" :current-page="currentPage" :fields="fields">
             <template slot="actions" slot-scope="row">
@@ -69,10 +69,9 @@ export default {
     fetchLeaders() {
       this.toggleBusy();
 
-      const path_leaderboard = 'http://localhost:80/api/leaderboard';
-      // const path_leaderboard = 'ec2-3-86-50-53.compute-1.amazonaws.com:80/api/predic/leaderboard/';
+      const path = 'http://anigen-dev.us-east-1.elasticbeanstalk.com:80/api/leaderboard';
 
-      axios.get(path_leaderboard)
+      axios.get(path)
         .then((response) => {
           this.items = response.data;
           this.toggleBusy();
@@ -85,7 +84,7 @@ export default {
     },
 
     async upVoteExcellent(anigen_title) {
-      const path = `http://localhost:80/api/leaderboard/?upvote=${anigen_title}`;
+      const path = `http://anigen-dev.us-east-1.elasticbeanstalk.com:80/api/leaderboard/?upvote=${anigen_title}`;
 
       await axios.get(path)
         .then((response) => {

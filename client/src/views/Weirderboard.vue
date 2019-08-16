@@ -1,7 +1,7 @@
 <template>
   <div class="hero-section">
     <section class="container">
-      <div class="row justify-content-center my-4">
+      <div class="row justify-content-center mt-5 mb-1">
         <div class="col-10 text-center">
           <b-table striped hover dark id="anigen-weirderboard" :sort-desc.sync="sortDesc" :sort-by.sync="sortBy" :items="items" :per-page="perPage" :current-page="currentPage" :fields="fields">
             <template slot="actions" slot-scope="row">
@@ -69,8 +69,8 @@ export default {
     fetchWeird() {
       this.toggleBusy();
 
-      const path_weirderboard = 'http://localhost:80/api/weirderboard';
-      axios.get(path_weirderboard)
+      const path = 'http://anigen-dev.us-east-1.elasticbeanstalk.com:80/api/weirderboard';
+      axios.get(path)
         .then((response) => {
           this.items = response.data;
           this.toggleBusy();
@@ -83,7 +83,7 @@ export default {
     },
 
     async upVoteWeird(anigen_title) {
-      const path = `http://localhost:80/api/weirderboard/?upvote=${anigen_title}`;
+      const path = `http://anigen-dev.us-east-1.elasticbeanstalk.com:80/api/weirderboard/?upvote=${anigen_title}`;
       await axios.get(path)
         .then((response) => {
           console.log(response.data);

@@ -1,7 +1,7 @@
 <template>
   <div class="hero-section">
-    <section class="container pb-5">
-      <div class="row pt-5 my-2 mx-5 justify-content-center">
+    <section class="container">
+      <div class="row pt-3 my-2 mx-5 justify-content-center">
         <div class="col-sm-4 text-center">
           <b-button variant="outline-light" class="mx-3 my-1 shadow-sm font-weight-bold" @click="getTitles(50)">Generate 1 Title</b-button>
         </div>
@@ -114,13 +114,12 @@ export default {
       this.toggleBusy();
       this.visible = true;
 
-      const path = 'http://localhost:5000/api/predict/';
-      // const path = 'http://ec2-3-86-50-53.compute-1.amazonaws.com:80/api/predict/';
+      const path = 'http://anigen-dev.us-east-1.elasticbeanstalk.com:80/api/predict/';
       await axios.post(path, {
-        batchSize,
-        randomness: this.randomness,
-        startString: this.startString,
-      })
+          batchSize,
+          randomness: this.randomness,
+          startString: this.startString,
+        })
         .then((response) => {
           this.titles = response.data[0];
           this.dropped_titles = response.data[1];
@@ -135,7 +134,7 @@ export default {
     },
 
     async markExcellent(anigen_title) {
-      const path = `http://localhost:80/api/leaderboard/?title=${anigen_title.anigen_title}`;
+      const path = `http://anigen-dev.us-east-1.elasticbeanstalk.com:80/api/leaderboard/?title=${anigen_title.anigen_title}`;
 
       await axios.get(path)
         .then((response) => {
@@ -149,7 +148,7 @@ export default {
     },
 
     async markWeird(anigen_title) {
-      const path = `http://localhost:80/api/weirderboard/?title=${anigen_title.anigen_title}`;
+      const path = `http://anigen-dev.us-east-1.elasticbeanstalk.com:80/api/weirderboard/?title=${anigen_title.anigen_title}`;
 
       await axios.get(path)
         .then((response) => {
@@ -176,14 +175,28 @@ export default {
 
 </script>
 <style>
-.hero-section {
-  height: 100vh;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)),
-    url("../assets/images/cowboybebop.jpg");
-  /* flex-box thing */
-  display: flex;
-  flex-direction: column;
-  background-size: cover;
+@media all and (min-width: 1000px) {
+  .hero-section {
+    min-height: 100vh;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)),
+      url("../assets/images/cowboybebop_topcrop.jpg");
+    /* flex-box thing */
+    display: flex;
+    flex-direction: column;
+    background-size: cover;
+  }
+}
+
+@media all and (max-width: 1000px) {
+  .hero-section {
+    min-height: 100vh;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)),
+      url("../assets/images/cowboybebop_half_res.jpg");
+    /* flex-box thing */
+    display: flex;
+    flex-direction: column;
+    background-size: cover;
+  }
 }
 
 </style>
