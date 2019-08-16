@@ -5,8 +5,6 @@ import random
 import numpy as np
 import tensorflow as tf
 
-tf.compat.v1.enable_eager_execution()
-
 # ------------------------------- FNS BELOW WILL BE USED WITHIN IMPORTED FNs ------------------------------------
 
 
@@ -21,12 +19,8 @@ def mapping_creation(vocab):
 
 
 def build_model(vocab_size, embedding_dim, rnn_units, batch_size):
-
-    if tf.test.is_gpu_available():
-        rnn = tf.compat.v1.keras.layers.CuDNNGRU
-    else:
-        import functools
-        rnn = functools.partial(tf.keras.layers.GRU, recurrent_activation='sigmoid')
+    import functools
+    rnn = functools.partial(tf.keras.layers.GRU, recurrent_activation='sigmoid')
 
     model = tf.keras.Sequential()
     model.add(tf.keras.layers.Embedding(vocab_size, embedding_dim, batch_input_shape=[batch_size, None]))
@@ -34,7 +28,6 @@ def build_model(vocab_size, embedding_dim, rnn_units, batch_size):
     model.add(tf.keras.layers.Dropout(0.075))
     model.add(rnn(rnn_units, return_sequences=True, recurrent_initializer='glorot_uniform', stateful=True))
     model.add(tf.keras.layers.Dense(vocab_size))
-    print(model.summary())
     return model
 
 
@@ -90,7 +83,6 @@ def generate_text(engine, start_string="", temp=0.75, num_generate=400, random_w
         # remove the batch dimension
         predictions = tf.squeeze(predictions, 0)
 
-        # using a multinomial distribution to predict the word returned by the model
         predictions = predictions / temperature
         predicted_id = tf.random.categorical(predictions, num_samples=1)[-1, 0].numpy()
 
@@ -135,7 +127,6 @@ def parse_anigen_and_dropped_titles(titles, real_titles, num_of_chars):
         anigen_list_dict = [{"anigen_title": anigen_titles[0]}]
     else:
         anigen_list_dict = [{"anigen_title": title} for title in anigen_titles if len(title) >= 4]
-
 
     return anigen_list_dict, dropped_list_dict
 # ----------------------------------------------------------------------------------------------------------------

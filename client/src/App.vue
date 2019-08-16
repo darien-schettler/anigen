@@ -8,7 +8,7 @@
 </template>
 <style lang="scss">
 #app-body {
-  min-height: 92.5vh !important;
+  min-height: 125vh !important;
   font-family: 'Raleway', sans-serif;
 }
 

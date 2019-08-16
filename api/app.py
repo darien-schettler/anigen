@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from txt_imports import RANDOM_WORD_LIST, REAL_TITLES
 from helper_functions import prediction_engine, generate_text, get_args_from_post, parse_anigen_and_dropped_titles
 from flask_migrate import Migrate
+from config import SQLALCHEMY_DATABSE_URI
 
 # -----------------------------------------------------------------------------------
 #                                   IMPORTS ABOVE
@@ -15,8 +16,7 @@ from flask_migrate import Migrate
 # -----------------------------------------------------------------------------------
 
 app = Flask(__name__)
-
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:Dribble_12@database-anigen.cbrhswaejifl.us-east-1.rds.amazonaws.com:5432/anigen"
+app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABSE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
