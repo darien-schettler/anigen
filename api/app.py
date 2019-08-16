@@ -1,7 +1,9 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
 from txt_imports import RANDOM_WORD_LIST, REAL_TITLES
 from helper_functions import prediction_engine, generate_text, get_args_from_post, parse_anigen_and_dropped_titles
+from flask_migrate import Migrate
 
 # -----------------------------------------------------------------------------------
 #                                   IMPORTS ABOVE
@@ -13,8 +15,18 @@ from helper_functions import prediction_engine, generate_text, get_args_from_pos
 # -----------------------------------------------------------------------------------
 
 app = Flask(__name__)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:Dribble_12@database-anigen.cbrhswaejifl.us-east-1.rds.amazonaws.com:5432/anigen"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 CORS(app)
 
+from models import ExcellentList, WeirdList
+
+db.create_all()
+db.session.commit()
 
 # -------------------------------------------
 # Make the title prediction model {engine}
@@ -58,43 +70,64 @@ def leaderboard():
     upvote = request.args.get('upvote')
 
     if title is not None:
-        if title not in LEADER_BOARD:
-            LEADER_BOARD.append(title)
 
-        VOTES[LEADER_BOARD.index(title)] += 1
-        return jsonify(LEADER_BOARD)
+        excellent_title = ExcellentList.query.filter_by(title=title).first()
+
+        if excellent_title is None:
+
+            excellent_title = ExcellentList(title=title, votes=1)
+            db.session.add(excellent_title)
+            db.session.commit()
+
+        else:
+
+            excellent_title.upvote()
 
     if upvote is not None:
-        VOTES[LEADER_BOARD.index(upvote)] += 1
+        title_to_upvote = ExcellentList.query.filter_by(title=upvote).first()
+        title_to_upvote.upvote()
 
-    leaderboard = [{"votes": v, "anigen_titles": t} for v, t in zip(VOTES, LEADER_BOARD)]
-    return jsonify(leaderboard)
+    leaderboard_data = ExcellentList.query.all()
+    leaderboard_titles = [ld.title for ld in leaderboard_data]
+    leaderboard_votes = [ld.votes for ld in leaderboard_data]
+    leaderboard_data = [{"votes": v, "anigen_titles": t} for v, t in zip(leaderboard_votes, leaderboard_titles)]
+
+    return jsonify(leaderboard_data)
 
 
 # weirderboard endpoint
 @app.route('/api/weirderboard/', methods=['GET'])
 def weirderboard():
-
     title = request.args.get('title')
     upvote = request.args.get('upvote')
 
     if title is not None:
-        if title not in WEIRDER_BOARD:
-            WEIRDER_BOARD.append(title)
 
-        VOTES[WEIRDER_BOARD.index(title)] += 1
-        return jsonify(WEIRDER_BOARD)
+        weird_title = WeirdList.query.filter_by(title=title).first()
+        if weird_title is None:
+
+            weird_title = WeirdList(title=title, votes=1)
+            db.session.add(weird_title)
+            db.session.commit()
+
+        else:
+
+            weird_title.upvote()
 
     if upvote is not None:
-        VOTES[WEIRDER_BOARD.index(upvote)] += 1
+        title_to_upvote = WeirdList.query.filter_by(title=upvote).first()
+        title_to_upvote.upvote()
 
-    weirderboard = [{"votes": v, "anigen_titles": t} for v, t in zip(VOTES, WEIRDER_BOARD)]
-    return jsonify(weirderboard)
+    weirderboard_data = WeirdList.query.all()
+    weirderboard_titles = [wd.title for wd in weirderboard_data]
+    weirderboard_votes = [wd.votes for wd in weirderboard_data]
+    weirderboard_data = [{"votes": v, "anigen_titles": t} for v, t in zip(weirderboard_votes, weirderboard_titles)]
+
+    return jsonify(weirderboard_data)
 # ---------------------------------------------------------------------------------------------------------------
 
 
 # api/app.py
 if __name__ == '__main__':
-
     app.run(host='0.0.0.0', port=80)
 

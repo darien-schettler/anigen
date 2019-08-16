@@ -114,8 +114,8 @@ export default {
       this.toggleBusy();
       this.visible = true;
 
-      // const path = 'http://localhost:80/api/predict/';
-      const path = 'http://ec2-3-86-50-53.compute-1.amazonaws.com:80/api/predict/';
+      const path = 'http://localhost:5000/api/predict/';
+      // const path = 'http://ec2-3-86-50-53.compute-1.amazonaws.com:80/api/predict/';
       await axios.post(path, {
         batchSize,
         randomness: this.randomness,

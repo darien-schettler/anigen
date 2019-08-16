@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 from txt_imports import TITLE_VOCAB, RANDOM_WORD_LIST
 from feature_imports import TITLE_VOCAB_SIZE, EMBEDDING_DIM, RNN_UNITS
-
 import random
-
 import numpy as np
-
 import tensorflow as tf
+
 tf.compat.v1.enable_eager_execution()
 
 # ------------------------------- FNS BELOW WILL BE USED WITHIN IMPORTED FNs ------------------------------------
@@ -36,7 +34,7 @@ def build_model(vocab_size, embedding_dim, rnn_units, batch_size):
     model.add(tf.keras.layers.Dropout(0.075))
     model.add(rnn(rnn_units, return_sequences=True, recurrent_initializer='glorot_uniform', stateful=True))
     model.add(tf.keras.layers.Dense(vocab_size))
-
+    print(model.summary())
     return model
 
 
