@@ -16,7 +16,8 @@ The machine learning was completed by utilizing tensorflow 2.0 beta and the idea
 
 All development was done in a jupyter notebook running on an AWS EC2 instance.<br>
 
-Here are details of the model and hyperparameters:
+## Model & Hyperparameter Details
+
   - TBD
 
 
